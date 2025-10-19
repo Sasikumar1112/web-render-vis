@@ -1,52 +1,69 @@
-import { StrictMode } from 'react';
-import React from 'react'; //React not defined error
+import { React, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import './styles/tailwind.css'; // Import your CSS file
-import './styles/htmldisplay.css'; // Import your CSS file
+import './styles/tailwind.css';
+import './styles/htmldisplay.css';
 import ReactDOM from 'react-dom';
 
-// Componets Imports
+// Components Imports
 import RenderingEngine from './components/renderingEngine';
 import rawHTML from '../index.html?raw'; // Importing HTML file as raw text
 import HTMLDisplay from './components/htmldisplay';
-import {IterateOverHTMLPreview} from './components/tokenizer.jsx';
 
-let delay ={
-  processDelay : 10000,
-}
-let htmlRaw = rawHTML;
-let htmldisp = HTMLDisplay( htmlRaw );
-let i =0;
-// setInterval(() => {
-//   IterateOverHTMLPreview( i, htmlRaw );
-//   i++;
-// }, 100);
-//Utils
-function headingComponent(){
-  return   <div>
-            <div className="bg-gray-800 text-white p-2 block">
-              <header className="justify-center font-bold flex w-full text-3xl">
-                <h1>Browser Rendering Visualizer</h1>
-              </header>
-              <RenderingEngine/>
-            </div>
-            <header className="p-2">
-                <h2>Processes</h2>
-              </header>
-          </div>
-}
-let heading = headingComponent();
-createRoot(document.getElementById('root')).render(
-  <div>
-      {heading}
-  </div>
-);
-createRoot(document.getElementById('htmlpreview')).render(
-  ReactDOM.createPortal(
+let htmldisproot = createRoot(document.getElementById('htmlpreview'));
+function App() {
+  let [htmldisplayed, setDisplayState] = useState(false);
+
+  function showHTMLPreview(ev) {
+    let htmldisp = null;
+    if( htmldisplayed == false ) {
+      htmldisp = HTMLDisplay(rawHTML);
+      setDisplayState(true);
+      ev.target.innerText = "Hide HTML Preview";
+      ev.target.style.backgroundColor = "oklch(0.74 0.15 261.24)";
+    } else{
+      setDisplayState(false);
+      ev.target.innerText = "Show HTML Preview";
+      ev.target.style.backgroundColor = null;
+    }
+    htmldisproot.render(
+      ReactDOM.createPortal(
+        <div>
+          {htmldisp}
+        </div>,
+        document.getElementById('htmlpreview')
+      )
+    );
+  }
+
+  function headingComponent() {
+    return (
+      <div>
+        <div className="bg-gray-800 text-white p-2 block">
+          <header className="justify-center font-bold flex w-full text-3xl">
+            <h1>Browser Rendering Visualizer</h1>
+          </header>
+          <RenderingEngine />
+        </div>
+      </div>
+    );
+  }
+
+  const heading = headingComponent();
+
+  return (
     <div>
-      {htmldisp}
-    </div>,
-    document.getElementById('htmlpreview')
-  )
-)
-//TODO: add event listener here so that the component can be appended on ev
+      {heading}
+      <div className="buttons m-4">
+        <button
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer"
+          onClick={showHTMLPreview}
+          style={{width: "190px"}}
+        >
+          {"Show HTML Preview"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+createRoot(document.getElementById('root')).render(<App />);

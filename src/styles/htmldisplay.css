@@ -5,6 +5,10 @@
     border-radius: 6px;
     margin-left: 6px;
 }
+#htmlpreview{
+    position: relative;
+    top: 20px;
+}
 .html_area{
     width: 500px;
     min-height: 600px;
